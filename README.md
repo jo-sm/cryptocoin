@@ -1,5 +1,7 @@
 # Cryptocoin
 
+## NOTE: I haven't added code to this library since mid-2014. I know a lot of things have changed since then, and I am planning to get this to a more stable build. It's current a WIP, not production ready!
+
 Cryptocoin is a library for processing information from a Bitcoin-based cryptocoin network and wrapping that data in a useful and Ruby-like manner. Although based off of `bitcoin-ruby` in concept, it deviates largely due to its philosophy in implementations; rather than trying to do everything, `cryptocoin` just provides wrappers around cryptocoin structures such as a block or merkle tree. Due to this difference, it cannot do certain features such as block validation, as block validation requires information beyond the basic structure (multiple transactions). 
 
 ## Installation
