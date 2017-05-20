@@ -3,34 +3,34 @@ require 'digest/rmd160'
 
 module Cryptocoin
   class Digest
-    def initialize(str)
-      @plaintext = str
+    def initialize(str, encoding)
+      return false if ![:string, :binary].include?(encoding)
+      @plaintext = str.to_s
+      @encoding = encoding
     end
 
-    def to_sha256
-      Digest::SHA256.hexdigest([@plaintext].pack('H*'))
-    end
-
-    def to_double_sha256
-      Digest::SHA256.digest(Digest::SHA256.digest([@plaintext].pack('H*').reverse)).reverse.unpack('H*')[0]
-    end
-
-    def to_hash160
-      Digest::RMD160.hexdigest(Digest::SHA256.digest([@plaintext].pack('H*')))
-    end
-
-    def to_base58
-      alphabet = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
-      leading_zero_bytes  = (@plaintext.match(/^([0]+)/) ? $1 : '').size / 2
-      encoded = ''
-      i = @plaintext.to_i(16)
-
-      while i > 0
-        i, rem = i.divmod(alphabet.size)
-        encoded = alphabet[rem] + encoded
+    def sha256
+      if @encoding == :binary
+        ::Digest::SHA256.hexdigest(@plaintext)
+      elsif @encoding == :string
+        ::Digest::SHA256.hexdigest([@plaintext].pack('H*'))
       end
+    end
 
-      ('1'*leading_zero_bytes) + encoded
+    def double_sha256
+      if @encoding == :binary
+        ::Digest::SHA256.hexdigest(::Digest::SHA256.digest(@plaintext))
+      elsif @encoding == :string
+        ::Digest::SHA256.hexdigest(::Digest::SHA256.digest([@plaintext].pack('H*')))
+      end
+    end
+
+    def hash160
+      if @encoding == :binary
+        ::Digest::RMD160.hexdigest(::Digest::SHA256.digest(@plaintext))
+      elsif @encoding == :string
+        ::Digest::RMD160.hexdigest(::Digest::SHA256.digest([@plaintext].pack('H*')))
+      end
     end
   end
 end

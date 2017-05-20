@@ -4,10 +4,15 @@ module Cryptocoin
   class Script
     # Taken from the Bitcoin official client
     class OpCode
-      include OpCode::Constants
+      include Cryptocoin::Script::OpCode::Constants
+      def self.from_name(name)
+        c = Cryptocoin::Script::OpCode::Constants.const_get(name.upcase)
+        self.new([c].pack('C'))
+      rescue NameError 
+        false
+      end
 
       def initialize(bin)
-        # First, is it even an op_code?
         @bin = bin
         @hex = bin.unpack('H*')[0].to_i(16)
 
@@ -21,12 +26,20 @@ module Cryptocoin
       def name
         # Return special case first 
         return nil if !@valid
-        return 'OP_PUSHDATA0' if @hex.between(OP_PUSHDATA0, OP_PUSHDATA1)
-        const_by_val(hex)
+        return 'OP_PUSHDATA0' if @hex.between?(OP_PUSHDATA0, OP_PUSHDATA1)
+        const_by_val(hex).to_s
       end
 
       def hex
         @hex
+      end
+
+      def raw
+        @bin
+      end
+
+      def valid?
+        @valid
       end
 
       def disabled?
@@ -37,8 +50,8 @@ module Cryptocoin
       private
 
       def const_by_val(val)
-        constants.find{ |name|
-          const_get(name) == val
+        Cryptocoin::Script::OpCode::Constants.constants.find{ |name|
+          Cryptocoin::Script::OpCode::Constants.const_get(name) == val
         }
       end
     end

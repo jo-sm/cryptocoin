@@ -144,6 +144,13 @@ module Cryptocoin
         OP_PUBKEY = 0xfe
 
         OP_INVALIDOPCODE = 0xff
+
+        def self.const_get(*args)
+          super(*args)
+          rescue NameError => msg
+            return OP_PUSHDATA0 if args[0] == "OP_PUSHDATA0"
+            raise NameError, msg
+        end
       end
     end
   end
